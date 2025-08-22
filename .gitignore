@@ -1,0 +1,6 @@
+.vs/
+build/
+src/config/server_config.h
+*.user
+
+*.exe
