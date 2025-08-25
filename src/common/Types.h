@@ -1,6 +1,8 @@
 #pragma once
 #include <Windows.h>
 
+constexpr uintptr_t EXCEPTION_SETUP_FAILED_VALUE = 0x505050;
+
 using LoadLibraryAFunc = HINSTANCE(WINAPI*)(const char* libraryName);
 using GetProcAddressFunc = FARPROC(WINAPI*)(HMODULE module, LPCSTR procName);
 using DllEntryPointFunc = BOOL(WINAPI*)(LPVOID dllHandle, DWORD reason, LPVOID reserved);
@@ -22,8 +24,6 @@ enum class ManualMapError
     DLL_MAIN_FAILED,
     UNKNOWN_ERROR
 };
-
-#pragma pack(push, 1) // Important for interprocess communication
 
 struct ManualMapOptions
 {
@@ -60,5 +60,3 @@ struct ManualMapData
     ManualMapError errorCode;
     DWORD lastWin32Error;
 };
-
-#pragma pack(pop)

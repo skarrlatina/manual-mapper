@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	DWORD pid = GetProcessIdByName(L"mspaint.exe");
+	DWORD pid = GetProcessIdByName(L"target.exe");
 	if (!pid)
 	{
 		logs::LogError("Process not found.");
@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 	}
 
 	std::vector<BYTE> dllBuffer;
-	if (!ReadFileToMemory(L"C:\\testDll.dll", dllBuffer))
+	if (!ReadFileToMemory(L".dll", dllBuffer))
 	{
 		logs::LogError("Failed to read file.");
 		CloseHandle(processHandle);

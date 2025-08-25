@@ -168,7 +168,7 @@ bool ProcessExceptions(PBYTE imageBase, PIMAGE_OPTIONAL_HEADER optionalHeader,
     }
  
 #ifdef _WIN64
-    mapData->moduleHandle = exceptionFailed ? reinterpret_cast<HINSTANCE>(0x505050) : reinterpret_cast<HINSTANCE>(imageBase);
+    mapData->moduleHandle = exceptionFailed ? (HINSTANCE)(EXCEPTION_SETUP_FAILED_VALUE) : reinterpret_cast<HINSTANCE>(imageBase);
 #else
     mapData->moduleHandle = reinterpret_cast<HINSTANCE>(pBase);
 #endif
@@ -265,7 +265,7 @@ bool WaitForInjectionResult(HANDLE processHandle, HINSTANCE& outModule, LPVOID m
 		if (!ReadProcessMemory(processHandle, mapData, &dataChecked, sizeof(dataChecked), nullptr)) 
             return false;
 
-		if (dataChecked.moduleHandle == reinterpret_cast<HINSTANCE>(0x505050)) 
+		if (dataChecked.moduleHandle == (HINSTANCE)(EXCEPTION_SETUP_FAILED_VALUE))
         {
             logs::LogError("ManualMap: Module loaded, but exception handling setup failed.");
 			outModule = nullptr;
