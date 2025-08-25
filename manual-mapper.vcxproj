@@ -148,10 +148,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\mapper\ManualMap.cpp" />
+    <ClCompile Include="src\mapper\Shellcode.cpp" />
+    <ClCompile Include="src\utils\ImageLoader.cpp" />
     <ClCompile Include="src\utils\ProcessUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\Types.h" />
+    <ClInclude Include="src\mapper\ManualMap.h" />
+    <ClInclude Include="src\mapper\Shellcode.h" />
     <ClInclude Include="src\utils\ImageLoader.h" />
+    <ClInclude Include="src\utils\logs\Colors.h" />
+    <ClInclude Include="src\utils\logs\Logger.h" />
     <ClInclude Include="src\utils\ProcessUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
