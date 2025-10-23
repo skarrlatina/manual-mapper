@@ -47,7 +47,7 @@ bool ManualMapDll(HANDLE processHandle, const std::vector<BYTE>& dllBuffer, Manu
         mapData.rtlAddFunctionTable = (RtlAddFunctionTableFunc)RtlAddFunctionTable;
         logs::LogInfo("ManualMap: x64 mode - SEH support %s", options.enableSehSupport ? "enabled" : "disabled");
 #else
-        if (options.sehSupport) 
+        if (options.enableSehSupport)
         {
             logs::LogWarning("ManualMap: SEH support not available on x86 architecture");
         }

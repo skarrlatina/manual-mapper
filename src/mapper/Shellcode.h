@@ -1,7 +1,7 @@
 #pragma once
 #include "../common/Types.h"
 
-void Shellcode(ManualMapData* data);
+void __stdcall Shellcode(ManualMapData* data);
 void ShellcodeEnd();
 
 bool ProcessRelocations(PBYTE imageBase, PIMAGE_OPTIONAL_HEADER optionalHeader, ManualMapData* mapData);
