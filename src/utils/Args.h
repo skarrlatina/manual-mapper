@@ -9,4 +9,6 @@ struct ArgsData
 	std::string target;
 
 	static std::optional<ArgsData> Parse(int argc, char* argv[]);
-};
+} inline g_Args;
+
+inline ArgsData g_Args;

@@ -1,18 +1,15 @@
-#include <iostream>
-#include <optional>
-
-#include "Args.h"
+#include "utils/Args.h"
+#include "utils/Logger.h"
 
 int main(int argc, char* argv[])
 {
-	auto argsOpt = ArgsData::Parse(argc, argv);
+	//auto argsOpt = ArgsData::Parse(argc, argv);
 
-	if (!argsOpt)
-		return 1;
+	//if (!argsOpt)
+	//	return 1;
 
-	ArgsData args = *argsOpt;
-	std::cout << "[+] Path: " << args.path << std::endl;
-	std::cout << "[+] Target: " << args.target << std::endl;
+	ArgsData args = { .path = "test.dll", .target = "proc.exe"};
+	logger::LogInfo("[*] ", "Path: {}, Target: {}", args.path, args.target);
 
 	return 0;
 }

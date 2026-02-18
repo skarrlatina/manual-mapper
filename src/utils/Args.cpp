@@ -1,9 +1,10 @@
 #include "Args.h"
-#include <iostream>
 
 std::optional<ArgsData> ArgsData::Parse(int argc, char* argv[])
 {
 	ArgsData data;
+
+	if(argc <= 0)
 
 	for (int i = 1; i < argc; ++i)
 	{
