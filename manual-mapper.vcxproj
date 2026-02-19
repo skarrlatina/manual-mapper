@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -143,12 +143,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\loader\ImageLoader.cpp" />
+    <ClCompile Include="src\mapper\ManualMap.cpp" />
+    <ClCompile Include="src\mapper\Shellcode.cpp" />
     <ClCompile Include="src\utils\Args.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\utils\Proc.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\common\Types.h" />
+    <ClInclude Include="src\loader\ImageLoader.h" />
+    <ClInclude Include="src\mapper\ManualMap.h" />
+    <ClInclude Include="src\mapper\Shellcode.h" />
     <ClInclude Include="src\utils\Args.h" />
-    <ClInclude Include="src\utils\Logger.h" />
+    <ClInclude Include="src\utils\logger\Logger.h" />
+    <ClInclude Include="src\utils\Proc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

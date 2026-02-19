@@ -5,10 +5,8 @@
 
 struct ArgsData
 {
-	std::string path;
-	std::string target;
+	std::wstring path;
+	std::wstring target;
 
-	static std::optional<ArgsData> Parse(int argc, char* argv[]);
+	static std::optional<ArgsData> Parse(int argc, wchar_t* argv[]);
 } inline g_Args;
-
-inline ArgsData g_Args;
