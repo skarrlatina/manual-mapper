@@ -12,12 +12,12 @@ bool ManualMapDll(HANDLE processHandle, const std::vector<BYTE>& dllBuffer, Manu
     HANDLE shellThread = nullptr;
     bool success = false;
 
-	 logs::LogInfo(L"[*] Starting manual mapping of the DLL...");
+	logs::LogInfo(L"[*] Starting manual mapping of the DLL...");
 
     if (!ValidatePEHeaders(localImage))
     {
 		logs::LogError(L"[!] Invalid PE headers. Aborting manual mapping.");
-        return false;
+        return success;
     }
 
 	logs::LogInfo(L"[*] PE headers validated successfully.");
@@ -93,11 +93,15 @@ bool ManualMapDll(HANDLE processHandle, const std::vector<BYTE>& dllBuffer, Manu
         if (!WaitForInjectionResult(processHandle, shellThread, remoteModule, remoteMapData, 15000))
         {
             logs::LogError(L"[!] Shellcode execution failed or timed out.");
+            success = false;
 			break;
         }
         logs::LogSuccess(L"[+] DLL injected successfully at remote address: {:p}", (void*)remoteModule);
+        success = true;
 
     } while (false);
+
+    return success;
 }
 
 PBYTE WriteMapData(HANDLE processHandle, const ManualMapData& data)
@@ -111,4 +115,68 @@ PBYTE WriteMapData(HANDLE processHandle, const ManualMapData& data)
         return nullptr;
     }
 	return remoteMemory;
+}
+
+void ClearHeadersAndSections(HANDLE processHandle, PBYTE remoteImage, PIMAGE_NT_HEADERS ntHeaders, bool clearHeaders, bool clearSections, bool clearSeh)
+{
+    if (clearHeaders)
+    {
+        DWORD sizeOfHeaders = ntHeaders->OptionalHeader.SizeOfHeaders;
+        std::vector<BYTE> zeroBuffer(sizeOfHeaders, 0);
+
+        if (!WriteProcessMemory(processHandle, remoteImage, zeroBuffer.data(), sizeOfHeaders, nullptr))
+        {
+            logs::LogError(L"Failed to clear headers. Error: {}", GetLastError());
+        }
+    }
+
+    if (clearSections)
+    {
+        auto sectionHeader = IMAGE_FIRST_SECTION(ntHeaders);
+        for (UINT i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i)
+        {
+            SIZE_T sizeToClear = sectionHeader->Misc.VirtualSize;
+            if (sectionHeader->Misc.VirtualSize)
+            {
+                if ((!clearSeh && strcmp((char*)sectionHeader->Name, ".pdata") == 0) ||
+                    strcmp((char*)sectionHeader->Name, ".rsrc") == 0 ||
+                    strcmp((char*)sectionHeader->Name, ".reloc") == 0)
+                {
+                    BYTE* emptyBuffer = (BYTE*)malloc(sizeToClear);
+                    if (emptyBuffer)
+                    {
+                        memset(emptyBuffer, 0, sizeToClear);
+                        WriteProcessMemory(processHandle, remoteImage + sectionHeader->VirtualAddress, emptyBuffer, sizeToClear, nullptr);
+                        free(emptyBuffer);
+                    }
+                }
+            }
+            ++sectionHeader;
+        }
+    }
+}
+
+void RestoreImageSectionProtections(HANDLE processHandle, PBYTE remoteImage, PIMAGE_NT_HEADERS ntHeaders, bool sehSupport)
+{
+    PIMAGE_SECTION_HEADER sectionHeader = IMAGE_FIRST_SECTION(ntHeaders);
+
+    for (UINT i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i)
+    {
+        if (sectionHeader->Misc.VirtualSize == 0)
+            continue;
+
+        DWORD oldProtect = 0;
+        DWORD newProtect = PAGE_READONLY;
+
+        if (sectionHeader->Characteristics & IMAGE_SCN_MEM_WRITE)
+            newProtect = PAGE_READWRITE;
+        else if (sectionHeader->Characteristics & IMAGE_SCN_MEM_EXECUTE)
+            newProtect = PAGE_EXECUTE_READ;
+
+        VirtualProtectEx(processHandle, remoteImage + sectionHeader->VirtualAddress, sectionHeader->Misc.VirtualSize, newProtect, &oldProtect);
+    }
+
+    DWORD oldProtect = 0;
+    SIZE_T headerSize = IMAGE_FIRST_SECTION(ntHeaders)->VirtualAddress;
+    VirtualProtectEx(processHandle, remoteImage, headerSize, PAGE_READONLY, &oldProtect);
 }
