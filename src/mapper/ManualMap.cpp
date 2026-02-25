@@ -97,6 +97,20 @@ bool ManualMapDll(HANDLE processHandle, const std::vector<BYTE>& dllBuffer, Manu
 			break;
         }
         logs::LogSuccess(L"[+] DLL injected successfully at remote address: {:p}", (void*)remoteModule);
+
+        if (options.clearHeader || options.clearUnusedSections)
+        {
+            ClearHeadersAndSections(processHandle, remoteImage, ntHeaders,
+                options.clearHeader, options.clearUnusedSections, options.enableSehSupport);
+
+            logs::LogDebug(L"[*] Headers and sections cleared");
+        }
+
+        if (options.adjustProtections)
+        {
+            RestoreImageSectionProtections(processHandle, remoteImage, ntHeaders, options.enableSehSupport);
+            logs::LogDebug(L"[*] Section protections restored");
+        }
         success = true;
 
     } while (false);
